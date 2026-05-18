@@ -3,7 +3,8 @@ import html
 from bs4 import BeautifulSoup
 from .common_functions import sanitize, sanitize_classname, wrap_div, is_in_pinliner
 from typing import Any
-
+from dotenv import load_dotenv
+import os
 
 
 should_prefer_src_template_import = not is_in_pinliner()
@@ -45,6 +46,14 @@ if not did_import_template:
         did_import_template = True
 
 from .minify_assets import minify_js, minify_css
+
+
+
+
+load_dotenv()
+STATIC_PATH = os.getenv("ASSET_BASE_URL", "")
+
+
 
 
 
@@ -122,9 +131,9 @@ def make_html(
             in \
             [] \
             + [
-                ('css-link','https://static.andrejp.com/normalize.css'),
-                ('css-link','https://static.andrejp.com/common.css',),
-                ('js-link','https://static.andrejp.com/common.js',),
+                ('css-link',f'{STATIC_PATH}normalize.css'),
+                ('css-link',f'{STATIC_PATH}common.css',),
+                ('js-link',f'{STATIC_PATH}common.js',),
                 ('js-embed',TEMPLATE_JS_PLUGINS,),
             ] \
             + assets
