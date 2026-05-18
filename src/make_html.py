@@ -1,0 +1,137 @@
+
+import html
+from bs4 import BeautifulSoup
+from .common_functions import sanitize, sanitize_classname, wrap_div, is_in_pinliner
+from typing import Any
+
+
+
+should_prefer_src_template_import = not is_in_pinliner()
+did_import_template = False
+
+
+
+if should_prefer_src_template_import:
+    try:
+        if __name__ == '__main__':
+            # run as a program
+            import template
+            did_import_template = True
+        elif '.' in __name__:
+            # package
+            from . import template
+            did_import_template = True
+        else:
+            # included with no parent package
+            import template
+            did_import_template = True
+    except ImportError:
+        did_import_template = False
+        pass
+
+
+if not did_import_template:
+    if __name__ == '__main__':
+        # run as a program
+        from TEMPLATE_COMPILED import TEMPLATE as template
+        did_import_template = True
+    elif '.' in __name__:
+        # package
+        from .TEMPLATE_COMPILED import TEMPLATE as template
+        did_import_template = True
+    else:
+        # included with no parent package
+        from TEMPLATE_COMPILED import TEMPLATE as template
+        did_import_template = True
+
+from .minify_assets import minify_js, minify_css
+
+
+
+
+def make_banner(txt) -> str:
+    return wrap_div('mdmreport-banner',txt)
+
+
+def make_meta(**props) -> str:
+    soup = BeautifulSoup("<meta></meta>", "html.parser")
+    div = soup.meta
+    for key, value in props.items():
+        meta[key] = value
+    return f'{meta}'
+
+
+def make_asset_jsembed(txt):
+    return f'<script>{minify_js(txt)}</script>'
+
+def make_asset_cssembed(txt):
+    return f'<style>{minify_css(txt)}</style>'
+
+def make_asset_jslink(txt):
+    def esc_quotes(t):
+        return f'{t}'.replace('"',r'\"')
+    return f'<script src="{esc_quotes(txt)}"></script>'
+
+def make_asset_csslink(txt):
+    def esc_quotes(t):
+        return f'{t}'.replace('"',r'\"')
+    return f'<link rel="stylesheet" href="{esc_quotes(txt)}"></link>'
+
+def make_asset(type,payload) -> str:
+    renderers = {
+        'js-embed': make_asset_jsembed,
+        'js-link': make_asset_jslink,
+        'css-embed': make_asset_cssembed,
+        'css-link': make_asset_csslink,
+    }
+    renderer = renderers.get(type,None)
+    if not renderer:
+        raise Exception(f'Can\'t make asset of type {type}')
+    return renderer(payload)
+
+def make_section(txt):
+    raise Exception(f'html: make_section: not implemented yet') # TODO: implement
+
+
+def make_html(
+    title: str,
+    page: str,
+    h1: str,
+    meta: list = [],
+    assets: list[tuple[str,Any]] = [],
+    cssclasses: list = [],
+    banners: list = [],
+    sections: list = [],
+) -> str:
+    TEMPLATE_JS_PLUGINS = 'window.hello = \'hello\';' # TODO: implement
+    result = ''
+    result += template.TEMPLATE_HTML_BEGIN.replace(
+        '{{INS_TITLE}}', html.escape(title)
+    ).replace(
+        '{{INS_PAGEHEADER}}', html.escape(page)
+    ).replace(
+        '{{INS_HEADING}}', html.escape(h1)
+    ).replace(
+        '{{INS_BANNER}}', ''.join([make_banner(m) for m in banners])
+    ).replace(
+        '{{ADD_META}}', ''.join([make_meta(m) for m in meta])
+    ).replace(
+        '{{ADD_ASSETS}}', ''.join([
+            make_asset(*m) \
+            for m \
+            in \
+            [] \
+            + [
+                ('css-link','https://static.andrejp.com/normalize.css'),
+                ('css-link','https://static.andrejp.com/common.css',),
+                ('js-link','https://static.andrejp.com/common.js',),
+                ('js-embed',TEMPLATE_JS_PLUGINS,),
+            ] \
+            + assets
+        ])
+    ).replace(
+        '{{INS_ADDEDCLASSES}}', f' {" ".join([sanitize_classname(m) for m in cssclasses])}'
+    )
+    result += ''.join([make_section(m) for m in sections])
+    result += template.TEMPLATE_HTML_END
+    return result
