@@ -24,12 +24,16 @@ def sanitize_classname(s):
     s = f'{s}'.split()
     return ' '.join([part if re.match(r'^\s*\w[\w\-]*\w\s*$',part) else err(part) for part in s])
 
-def wrap_div(classname,txt) -> str:
+def wrap_div(classname, txt) -> str:
     soup = BeautifulSoup("<div></div>", "html.parser")
     div = soup.div
-    # Parse fragment and append it
+
     fragment = BeautifulSoup(txt, "html.parser")
-    for child in fragment.contents:
+
+    # IMPORTANT: iterate over a copy
+    for child in list(fragment.contents):
         div.append(child)
+
     div["class"] = sanitize_classname(classname).split()
-    return f'{div}'
+
+    return str(div)

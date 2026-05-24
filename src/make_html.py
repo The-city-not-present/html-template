@@ -98,8 +98,12 @@ def make_asset(type,payload) -> str:
         raise Exception(f'Can\'t make asset of type {type}')
     return renderer(payload)
 
-def make_section(txt):
-    raise Exception(f'html: make_section: not implemented yet') # TODO: implement
+def make_section(html_scripts):
+    # raise Exception(f'html: make_section: not implemented yet') # TODO: implement
+    print(f'Insert section body: {html_scripts}')
+    result = wrap_div('section',html_scripts)
+    print(f'After wrapping: {result}')
+    return result
 
 
 def make_html(
