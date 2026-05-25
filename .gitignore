@@ -6,7 +6,8 @@
 dist/
 compiled/
 build/
-TEMPLATE_COMPILED/
+#TEMPLATE_COMPILED/
+**/GENERATED/
 .env
 
 # Reports generated from real data

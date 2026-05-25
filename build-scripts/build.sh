@@ -42,10 +42,10 @@ echo -
 if [ "$MODE" != "debug" ]; then
   echo "Produce \"html_bundle.py\""
   echo "pre-make compiled html template within src folder"
-  if [ ! -d "./src/TEMPLATE_COMPILED" ]; then
-    mkdir -p "./src/TEMPLATE_COMPILED"
+  if [ ! -d "./src/GENERATED/TEMPLATE_COMPILED" ]; then
+    mkdir -p "./src/GENERATED/TEMPLATE_COMPILED"
   fi
-  python build.py --program build --resource "src_template" --dest "./src/TEMPLATE_COMPILED/"
+  python build.py --program build --resource "src_template" --dest "./src/GENERATED/TEMPLATE_COMPILED/"
   echo "Calling pinliner..."
   # if [ ! -f "src-make/lib/pinliner/pinliner/pinliner.py" ]; then
   #   # TODO: confirm is having --remote fine? I think it is. It's something like apt update, it is normal to run this occasionally. I don't see an issue

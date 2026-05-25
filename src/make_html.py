@@ -34,15 +34,15 @@ if should_prefer_src_template_import:
 if not did_import_template:
     if __name__ == '__main__':
         # run as a program
-        from TEMPLATE_COMPILED import TEMPLATE as template
+        from GENERATED.TEMPLATE_COMPILED import TEMPLATE as template
         did_import_template = True
     elif '.' in __name__:
         # package
-        from .TEMPLATE_COMPILED import TEMPLATE as template
+        from .GENERATED.TEMPLATE_COMPILED import TEMPLATE as template
         did_import_template = True
     else:
         # included with no parent package
-        from TEMPLATE_COMPILED import TEMPLATE as template
+        from GENERATED.TEMPLATE_COMPILED import TEMPLATE as template
         did_import_template = True
 
 from .minify_assets import minify_js, minify_css

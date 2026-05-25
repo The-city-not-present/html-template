@@ -6,8 +6,8 @@ if [ ! -d "./compiled" ]; then
   mkdir -p "./compiled"
 fi
 
-if [ ! -d "./src/TEMPLATE_COMPILED" ]; then
-  mkdir -p "./src/TEMPLATE_COMPILED"
+if [ ! -d "./src/GENERATED/TEMPLATE_COMPILED" ]; then
+  mkdir -p "./src/GENERATED/TEMPLATE_COMPILED"
 fi
 
 if [ ! -f ".env" ]; then
